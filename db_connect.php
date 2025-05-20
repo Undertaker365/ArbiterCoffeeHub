@@ -1,8 +1,8 @@
 <?php
-$host = 'srv475.hstgr.io';
-$db   = 'u843463747_ArbiterDB';
-$user = 'u843463747_ArbiterCoffee';
-$pass = 'Aguilar123_';
+$host = 'localhost';
+$db   = 'arbiter_db';
+$user = 'root';
+$pass = '';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
