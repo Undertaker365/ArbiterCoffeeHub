@@ -1,8 +1,8 @@
 <?php
-$host = 'localhost';
-$db   = 'arbiter_db';
-$user = 'root';
-$pass = '';
+$host = '139.135.241.147';
+$db   = 'u843463747_ArbiterDB';
+$user = 'u843463747_ArbiterCoffee';
+$pass = 'Aguilar123_';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
