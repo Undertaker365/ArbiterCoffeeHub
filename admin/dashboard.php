@@ -341,20 +341,57 @@ window.addEventListener('scroll', function() {
         widget.classList.remove('opacity-0', 'pointer-events-none');
         widget.classList.add('opacity-100', 'pointer-events-auto');
     }
+    checkSidebarAndHideWidget();
 });
-</script>
-<style>
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-function scrollCarousel(id, dir) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const scrollAmount = 220; // px
-    el.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
+// Hide Date & Time widget on mobile if sidebar is open
+function checkSidebarAndHideWidget() {
+    const widget = document.getElementById('dateTimeWidget');
+    const sidebar = document.getElementById('sidebar'); // Assumes sidebar has id="sidebar"
+    const overlay = document.querySelector('.sidebar-overlay'); // Assumes overlay has this class
+    const isMobile = window.innerWidth < 768;
+    let sidebarOpen = false;
+    // Check if sidebar is open (by overlay visible or sidebar class)
+    if (isMobile) {
+        if (overlay && overlay.style.display !== 'none' && overlay.offsetParent !== null) {
+            sidebarOpen = true;
+        } else if (sidebar && (sidebar.classList.contains('translate-x-0') || sidebar.classList.contains('open'))) {
+            sidebarOpen = true;
+        }
+    }
+    if (widget) {
+        if (sidebarOpen) {
+            widget.classList.add('opacity-0', 'pointer-events-none');
+            widget.classList.remove('opacity-100', 'pointer-events-auto');
+        } else if (window.scrollY <= 20) {
+            widget.classList.remove('opacity-0', 'pointer-events-none');
+            widget.classList.add('opacity-100', 'pointer-events-auto');
+        }
+    }
+}
+// Listen for sidebar toggle and window resize
+window.addEventListener('resize', checkSidebarAndHideWidget);
+document.addEventListener('DOMContentLoaded', function() {
+    // If your sidebar toggle button has a known id or class, listen for clicks
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+            setTimeout(checkSidebarAndHideWidget, 350); // Wait for animation
+        });
+    }
+    // Also observe overlay clicks (to close sidebar)
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            setTimeout(checkSidebarAndHideWidget, 350);
+        });
+    }
+    checkSidebarAndHideWidget();
+});
+// Optionally, observe sidebar class changes (for frameworks that animate sidebar)
+const sidebar = document.getElementById('sidebar');
+if (sidebar && typeof MutationObserver !== 'undefined') {
+    const observer = new MutationObserver(checkSidebarAndHideWidget);
+    observer.observe(sidebar, { attributes: true, attributeFilter: ['class', 'style'] });
 }
 // Dark mode toggle
 function toggleDarkMode() {

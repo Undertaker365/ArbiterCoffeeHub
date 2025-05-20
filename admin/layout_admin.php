@@ -23,7 +23,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
 <div id="toast-container" class="fixed top-4 right-4 space-y-2 toast"></div>
 <div class="flex flex-1">
 <!-- Sidebar -->
-<div id="adminSidebar" class="w-64 bg-[#009245] text-white flex flex-col min-h-100 px-4 py-6 md:block fixed md:static top-0 left-0 z-40 h-full transition-transform duration-300 md:translate-x-0 -translate-x-full md:shadow-none shadow-2xl md:rounded-none rounded-r-2xl">
+<div id="adminSidebar" class="w-64 bg-[#009245] text-white flex flex-col min-h-screen px-4 py-6 md:block fixed md:static top-0 left-0 z-40 h-full transition-transform duration-300 md:translate-x-0 -translate-x-full md:shadow-none shadow-2xl md:rounded-none rounded-r-2xl">
     <div class="text-center mb-8">
         <img src="../uploads/logo.png" alt="Logo" class="bg-white rounded-full h-24 px-3 py-3 mx-auto mb-2">
         <h2 class="text-xl font-bold">Admin Panel</h2>
@@ -70,6 +70,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
     <!-- Page content will be injected here -->
     <?php if (isset($content)) echo $content; ?>
 </div>
+</div>
+<!-- Floating Date & Time Widget -->
+<div id="dateTimeWidget" class="fixed top-6 right-8 z-50 bg-white shadow-lg rounded-xl px-6 py-3 flex items-center gap-3 border border-gray-200 transition-all duration-300 opacity-100 pointer-events-auto">
+    <i class="fas fa-clock text-[#009245] text-xl"></i>
+    <div>
+        <div id="dateWidget" class="font-semibold text-gray-700 text-sm"></div>
+        <div id="timeWidget" class="font-mono text-lg text-[#009245]"></div>
+    </div>
 </div>
 <!-- Footer -->
 <footer class="bg-[#1A1A1A] text-white text-center py-3 mt-auto w-full border-t">
