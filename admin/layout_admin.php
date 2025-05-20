@@ -124,6 +124,49 @@ function showToast(message, type = 'success') {
     container.appendChild(toast);
     setTimeout(() => { toast.remove(); }, 3000);
 }
+// Date & Time Widget logic (display only at top, hide on scroll, also hide on mobile if sidebar is open)
+function updateDateTimeWidgetVisibility() {
+    const widget = document.getElementById('dateTimeWidget');
+    if (!widget) return;
+    function isSidebarOpenOnMobile() {
+        const sidebar = document.getElementById('adminSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const isMobile = window.innerWidth < 768;
+        if (!isMobile) return false;
+        if (overlay && overlay.style.display !== 'none' && overlay.offsetParent !== null) return true;
+        if (sidebar && (sidebar.classList.contains('translate-x-0') || sidebar.classList.contains('open'))) return true;
+        return false;
+    }
+    if (window.scrollY > 20 || isSidebarOpenOnMobile()) {
+        widget.classList.add('opacity-0', 'pointer-events-none');
+        widget.classList.remove('opacity-100', 'pointer-events-auto');
+    } else {
+        widget.classList.remove('opacity-0', 'pointer-events-none');
+        widget.classList.add('opacity-100', 'pointer-events-auto');
+    }
+}
+window.addEventListener('scroll', updateDateTimeWidgetVisibility);
+window.addEventListener('resize', updateDateTimeWidgetVisibility);
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+            setTimeout(updateDateTimeWidgetVisibility, 350);
+        });
+    }
+    const overlay = document.getElementById('sidebarOverlay');
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            setTimeout(updateDateTimeWidgetVisibility, 350);
+        });
+    }
+    updateDateTimeWidgetVisibility();
+});
+const sidebarMutation = document.getElementById('adminSidebar');
+if (sidebarMutation && typeof MutationObserver !== 'undefined') {
+    const observer = new MutationObserver(updateDateTimeWidgetVisibility);
+    observer.observe(sidebarMutation, { attributes: true, attributeFilter: ['class', 'style'] });
+}
 </script>
 </body>
 </html>

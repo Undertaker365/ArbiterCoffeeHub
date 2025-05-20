@@ -310,14 +310,7 @@ if (!empty($salesCategories)) {
         <?php endif; ?>
     </ul>
 </div>
-<!-- Floating Date & Time Widget -->
-<div id="dateTimeWidget" class="fixed top-6 right-8 z-50 bg-white shadow-lg rounded-xl px-6 py-3 flex items-center gap-3 border border-gray-200 transition-all duration-300 opacity-100 pointer-events-auto">
-    <i class="fas fa-clock text-[#009245] text-xl"></i>
-    <div>
-        <div id="dateWidget" class="font-semibold text-gray-700 text-sm"></div>
-        <div id="timeWidget" class="font-mono text-lg text-[#009245]"></div>
-    </div>
-</div>
+
 <script>
 // Live Date & Time
 function updateDateTimeWidget() {
@@ -330,7 +323,6 @@ function updateDateTimeWidget() {
 setInterval(updateDateTimeWidget, 1000);
 updateDateTimeWidget();
 // Hide widget on scroll down, show at top
-let lastScrollY = 0;
 window.addEventListener('scroll', function() {
     const widget = document.getElementById('dateTimeWidget');
     if (!widget) return;
@@ -338,59 +330,56 @@ window.addEventListener('scroll', function() {
         widget.classList.add('opacity-0', 'pointer-events-none');
         widget.classList.remove('opacity-100', 'pointer-events-auto');
     } else {
-        widget.classList.remove('opacity-0', 'pointer-events-none');
-        widget.classList.add('opacity-100', 'pointer-events-auto');
-    }
-    checkSidebarAndHideWidget();
-});
-// Hide Date & Time widget on mobile if sidebar is open
-function checkSidebarAndHideWidget() {
-    const widget = document.getElementById('dateTimeWidget');
-    const sidebar = document.getElementById('sidebar'); // Assumes sidebar has id="sidebar"
-    const overlay = document.querySelector('.sidebar-overlay'); // Assumes overlay has this class
-    const isMobile = window.innerWidth < 768;
-    let sidebarOpen = false;
-    // Check if sidebar is open (by overlay visible or sidebar class)
-    if (isMobile) {
-        if (overlay && overlay.style.display !== 'none' && overlay.offsetParent !== null) {
-            sidebarOpen = true;
-        } else if (sidebar && (sidebar.classList.contains('translate-x-0') || sidebar.classList.contains('open'))) {
-            sidebarOpen = true;
-        }
-    }
-    if (widget) {
-        if (sidebarOpen) {
-            widget.classList.add('opacity-0', 'pointer-events-none');
-            widget.classList.remove('opacity-100', 'pointer-events-auto');
-        } else if (window.scrollY <= 20) {
+        // Only show if sidebar is not open on mobile
+        if (!isSidebarOpenOnMobile()) {
             widget.classList.remove('opacity-0', 'pointer-events-none');
             widget.classList.add('opacity-100', 'pointer-events-auto');
         }
     }
+});
+
+// Helper: check if sidebar is open on mobile
+function isSidebarOpenOnMobile() {
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const isMobile = window.innerWidth < 768;
+    if (!isMobile) return false;
+    if (overlay && overlay.style.display !== 'none' && overlay.offsetParent !== null) return true;
+    if (sidebar && (sidebar.classList.contains('translate-x-0') || sidebar.classList.contains('open'))) return true;
+    return false;
 }
-// Listen for sidebar toggle and window resize
-window.addEventListener('resize', checkSidebarAndHideWidget);
+
+// Hide/show widget on sidebar toggle and window resize
+function updateDateTimeWidgetVisibility() {
+    const widget = document.getElementById('dateTimeWidget');
+    if (!widget) return;
+    if (window.scrollY > 20 || isSidebarOpenOnMobile()) {
+        widget.classList.add('opacity-0', 'pointer-events-none');
+        widget.classList.remove('opacity-100', 'pointer-events-auto');
+    } else {
+        widget.classList.remove('opacity-0', 'pointer-events-none');
+        widget.classList.add('opacity-100', 'pointer-events-auto');
+    }
+}
+window.addEventListener('resize', updateDateTimeWidgetVisibility);
 document.addEventListener('DOMContentLoaded', function() {
-    // If your sidebar toggle button has a known id or class, listen for clicks
     const sidebarToggle = document.getElementById('sidebarToggle');
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', function() {
-            setTimeout(checkSidebarAndHideWidget, 350); // Wait for animation
+            setTimeout(updateDateTimeWidgetVisibility, 350);
         });
     }
-    // Also observe overlay clicks (to close sidebar)
-    const overlay = document.querySelector('.sidebar-overlay');
+    const overlay = document.getElementById('sidebarOverlay');
     if (overlay) {
         overlay.addEventListener('click', function() {
-            setTimeout(checkSidebarAndHideWidget, 350);
+            setTimeout(updateDateTimeWidgetVisibility, 350);
         });
     }
-    checkSidebarAndHideWidget();
+    updateDateTimeWidgetVisibility();
 });
-// Optionally, observe sidebar class changes (for frameworks that animate sidebar)
-const sidebar = document.getElementById('sidebar');
+const sidebar = document.getElementById('adminSidebar');
 if (sidebar && typeof MutationObserver !== 'undefined') {
-    const observer = new MutationObserver(checkSidebarAndHideWidget);
+    const observer = new MutationObserver(updateDateTimeWidgetVisibility);
     observer.observe(sidebar, { attributes: true, attributeFilter: ['class', 'style'] });
 }
 // Dark mode toggle
