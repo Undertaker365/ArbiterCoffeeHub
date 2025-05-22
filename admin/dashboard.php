@@ -311,6 +311,7 @@ if (!empty($salesCategories)) {
     </ul>
 </div>
 
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
 // Live Date & Time
 function updateDateTimeWidget() {

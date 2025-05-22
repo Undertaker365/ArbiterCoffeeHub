@@ -36,6 +36,7 @@ ob_start();
     </table>
     <div id="pagination" class="flex justify-center mt-4"></div>
 </div>
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
 // Replace fetchCategories() to use fixed categories
 function fetchCategories() {

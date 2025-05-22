@@ -58,5 +58,7 @@ unset($_SESSION['reset_error']);
       <p>Remember your password? <a href="login.php" class="text-[#009245] hover:underline">Login here</a>.</p>
     </div>
   </div>
+
+  <script src="https://cdn.tailwindcss.com"></script>
 </body>
 </html>

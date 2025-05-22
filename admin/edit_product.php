@@ -79,3 +79,4 @@ $content = ob_get_clean();
     </div>
 </form>
 </div>
+<script src="https://cdn.tailwindcss.com"></script>

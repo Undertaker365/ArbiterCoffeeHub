@@ -61,6 +61,7 @@ $totalOrders = count($orders);
         </tbody>
     </table>
 </div>
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
 // Example: show a toast on export click
 const exportBtn = document.querySelector('a[href^="export_report.php"]');

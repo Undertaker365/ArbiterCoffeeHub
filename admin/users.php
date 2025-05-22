@@ -68,6 +68,7 @@ ob_start();
         <button onclick="closeUserProfile()" class="mt-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Close</button>
     </div>
 </div>
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
 function toggleUserStatus(id, currentStatus) {
     const action = currentStatus === 'active' ? 'deactivate' : 'activate';

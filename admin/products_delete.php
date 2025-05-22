@@ -17,3 +17,5 @@ if (isset($_POST['id'])) {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request.']);
 }
+?>
+<script src="https://cdn.tailwindcss.com"></script>

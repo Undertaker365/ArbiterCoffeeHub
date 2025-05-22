@@ -23,6 +23,7 @@ ob_start();
     <a href="orders.php" class="mt-4 inline-block text-blue-600 hover:underline">Back to Orders</a>
 </div>
 </div>
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
 document.getElementById('orderStatus').addEventListener('change', function() {
     fetch('update_order_status.php', {

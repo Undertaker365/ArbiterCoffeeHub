@@ -74,6 +74,7 @@ document.getElementById('statusFilter').addEventListener('change', function() {
     showToast('Search/filter not yet implemented (demo only)', 'error');
 });
 </script>
+<script src="https://cdn.tailwindcss.com"></script>
 <!-- Pagination placeholder: implement server-side pagination as needed -->
 <?php
 $content = ob_get_clean();
