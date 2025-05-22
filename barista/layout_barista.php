@@ -1,6 +1,8 @@
 <?php
 // layout_barista.php - Barista layout and navigation
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Barista') {
     header('Location: ../public/login.php');
     exit();

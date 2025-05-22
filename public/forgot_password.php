@@ -1,32 +1,19 @@
 <?php
 session_start();
+
 $success = $_SESSION['reset_success'] ?? null;
 $error = $_SESSION['reset_error'] ?? null;
 
 // Clear session messages
 unset($_SESSION['reset_success']);
 unset($_SESSION['reset_error']);
+
+$page_title = 'Forgot Password - Arbiter Coffee Hub';
+ob_start();
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Forgot Password - Arbiter Coffee Hub</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <style> body { font-family: 'Montserrat', sans-serif; } </style>
-</head>
-<body class="bg-[#f4f4f4] min-h-screen flex items-center justify-center px-4">
-
-  <div class="bg-white shadow-xl rounded-2xl max-w-md w-full p-8 space-y-6 border border-gray-200">
-    <div class="text-center">
-      <img src="../uploads/logo.png" alt="Arbiter Coffee Hub" class="mx-auto mb-4 h-12">
-      <h2 class="text-2xl font-bold text-[#006837]">Forgot Your Password?</h2>
-      <p class="text-sm text-gray-600">Enter your registered email address to reset your password.</p>
-    </div>
+<section class="py-16 bg-white">
+  <div class="max-w-md mx-auto px-4">
+    <h2 class="text-3xl font-bold text-[#006837] mb-8 text-center">Forgot Password</h2>
 
     <?php if ($success): ?>
       <div class="bg-green-100 border border-green-400 text-green-700 p-3 rounded-md">
@@ -54,11 +41,12 @@ unset($_SESSION['reset_error']);
       </button>
     </form>
 
-    <div class="text-center text-sm text-gray-600">
+    <div class="text-center text-sm text-gray-600 mt-4">
       <p>Remember your password? <a href="login.php" class="text-[#009245] hover:underline">Login here</a>.</p>
     </div>
   </div>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-</body>
-</html>
+</section>
+<?php
+$content = ob_get_clean();
+include 'layout_public.php';
+?>

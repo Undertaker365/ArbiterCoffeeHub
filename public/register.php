@@ -1,6 +1,5 @@
 <?php
 require_once '../db_connect.php';
-session_start();
 
 $errors = [];
 
@@ -47,23 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
+
+$page_title = 'Register - Arbiter Coffee Hub';
+ob_start();
 ?>
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register - Arbiter Coffee Hub</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Montserrat', sans-serif; }
-  </style>
-</head>
-<body>
 <div class="flex min-h-screen items-center justify-center bg-gray-100 px-4">
   <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
     <div class="text-center mb-4">
@@ -128,5 +116,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </div>
 </div>
-</body>
-</html>
+
+<?php
+$content = ob_get_clean();
+include 'layout_public.php';
+?>

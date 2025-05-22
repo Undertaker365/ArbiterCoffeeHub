@@ -6,22 +6,10 @@ $stmt->execute();
 $featuredProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arbiter Coffee Hub</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body { font-family: 'Montserrat', sans-serif; }
-  </style>
-</head>
-<body class="bg-white text-gray-900">
-
-  <?php include('includes/header.php'); ?>
+<?php
+$page_title = 'Welcome to Arbiter Coffee Hub';
+ob_start();
+?>
 
   <!-- Hero Section -->
   <section class="relative w-full bg-cover bg-center" style="background-image: url('../uploads/background.jpg');">
@@ -70,7 +58,7 @@ $featuredProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <hr class="border-t border-gray-200 mt-16">
 
-  <?php include('includes/footer.php'); ?>
-
-</body>
-</html>
+<?php
+$content = ob_get_clean();
+include 'public/layout_public.php';
+?>
