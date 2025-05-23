@@ -15,10 +15,10 @@
         <?php if (isset($_SESSION['role'])): ?>
           <?php if ($_SESSION['role'] === 'Customer'): ?>
             <li><a href="../customer/dashboard.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-user mr-1"></i> Dashboard</a></li>
-            <li><a href="../public/logout.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>
+            <li><a href="../customer/logout.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>
           <?php elseif ($_SESSION['role'] === 'Barista'): ?>
             <li><a href="../barista/dashboard.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-user mr-1"></i> Dashboard</a></li>
-            <li><a href="../public/logout.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>
+            <li><a href="../barista/logout.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>
           <?php elseif ($_SESSION['role'] === 'Admin'): ?>
             <li><a href="../admin/dashboard.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-user-shield mr-1"></i> Admin</a></li>
             <li><a href="../admin/logout.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>

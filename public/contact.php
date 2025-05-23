@@ -7,6 +7,7 @@ ob_start();
   <div class="max-w-2xl mx-auto px-4">
     <h2 class="text-3xl font-bold text-[#006837] mb-8 text-center">Contact Us</h2>
     <form action="" method="post" class="space-y-6 bg-gray-50 p-8 rounded-2xl shadow">
+      <input type="hidden" name="csrf_token" value="<?= bin2hex(random_bytes(32)) ?>">
       <div>
         <label class="block text-gray-700 font-semibold mb-2">Name</label>
         <input type="text" name="name" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-[#009245] focus:border-[#009245]" required>

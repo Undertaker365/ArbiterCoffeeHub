@@ -4,9 +4,7 @@ require_once 'db_connect.php';
 $stmt = $conn->prepare("SELECT * FROM products WHERE featured = 1 LIMIT 4");
 $stmt->execute();
 $featuredProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
 
-<?php
 $page_title = 'Welcome to Arbiter Coffee Hub';
 ob_start();
 ?>
@@ -31,11 +29,14 @@ ob_start();
         <?php if (count($featuredProducts) > 0): ?>
           
           <?php foreach ($featuredProducts as $product): ?>
+            <?php
+              $imgPath = 'uploads/' . ($product['image_filename'] ?? '');
+            ?>
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
-              <img src="../uploads/<?= htmlspecialchars($product['image']) ?>" class="w-full object-cover" alt="<?= htmlspecialchars($product['name']) ?>">
+              <img src="<?= $imgPath ?>" class="w-full object-cover" alt="<?= htmlspecialchars($product['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
               <div class="p-4">
-                <h3 class="text-lg font-semibold text-[#009245]"><?= htmlspecialchars($product['name']) ?></h3>
-                <p class="text-gray-700 text-sm"><?= htmlspecialchars($product['description']) ?></p>
+                <h3 class="text-lg font-semibold text-[#009245]"><?= htmlspecialchars($product['name'] ?? '', ENT_QUOTES, 'UTF-8') ?></h3>
+                <p class="text-gray-700 text-sm"><?= htmlspecialchars($product['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
                 <p class="text-gray-800 font-semibold mt-2"><?= number_format($product['price'], 2) ?> PHP</p>
               </div>
             </div>
@@ -55,8 +56,6 @@ ob_start();
       <a href="../public/announcements.php" class="text-[#009245] hover:underline">View all announcements →</a>
     </div>
   </section>
-
-  <hr class="border-t border-gray-200 mt-16">
 
 <?php
 $content = ob_get_clean();

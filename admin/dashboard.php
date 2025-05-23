@@ -157,8 +157,8 @@ if (!empty($salesCategories)) {
         </div>
     </div>
     <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex items-center space-x-4 transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-        <div class="bg-[#009245] text-white p-4 rounded-full">
-            <i class="fas fa-clock text-2xl"></i>
+        <div class="bg-[#009245] text-white p-4 rounded-full flex items-center justify-center">
+            <i class="fas fa-clock text-2xl" aria-label="Pending Orders Today"></i>
         </div>
         <div>
             <p class="text-gray-500">Pending Orders Today
@@ -168,7 +168,9 @@ if (!empty($salesCategories)) {
                     <span class="text-green-600 ml-2">▼ <?= number_format(abs($pendingTrend), 1) ?>%</span>
                 <?php endif; ?>
             </p>
-            <h2 class="text-xl font-bold" id="pendingTodayCount"><?= $pendingTodayCount ?></h2>
+            <h2 class="text-xl font-bold" id="pendingTodayCount">
+                <?= isset($pendingTodayCount) ? $pendingTodayCount : 0 ?>
+            </h2>
         </div>
     </div>
 </div>
@@ -228,7 +230,7 @@ if (!empty($salesCategories)) {
     </div>
 </div>
 <!-- Featured & Popular Items as Carousels -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
     <!-- Featured Items Carousel -->
     <div class="bg-white p-6 rounded-xl shadow relative">
         <h2 class="text-lg font-semibold text-[#006837] mb-2 flex items-center"><i class="fas fa-star text-yellow-400 mr-2"></i> Featured Items</h2>
@@ -310,79 +312,33 @@ if (!empty($salesCategories)) {
         <?php endif; ?>
     </ul>
 </div>
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+$notification = $_SESSION['notification'] ?? '';
+unset($_SESSION['notification']);
+?>
+<?php if ($notification): ?>
+  <div class="bg-green-100 border border-green-400 text-green-700 p-4 rounded mb-6 text-center max-w-xl mx-auto">
+    <?= htmlspecialchars($notification) ?>
+  </div>
+<?php endif; ?>
+
+<!-- Top right floating clock/date widget -->
+<div class="fixed top-4 right-6 z-50" id="dashboardFloatingDateTimeWidget">
+  <div class="bg-white rounded-xl shadow-lg px-5 py-3 flex items-center gap-3 border border-gray-200">
+    <i class="fas fa-clock text-2xl text-[#009245]"></i>
+    <div class="flex flex-col">
+      <span id="dashboardWidgetDate" class="text-xs text-gray-500"></span>
+      <span id="dashboardWidgetTime" class="text-lg font-semibold text-gray-700"></span>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Live Date & Time
-function updateDateTimeWidget() {
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
-    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    document.getElementById('dateWidget').textContent = dateStr;
-    document.getElementById('timeWidget').textContent = timeStr;
-}
-setInterval(updateDateTimeWidget, 1000);
-updateDateTimeWidget();
-// Hide widget on scroll down, show at top
-window.addEventListener('scroll', function() {
-    const widget = document.getElementById('dateTimeWidget');
-    if (!widget) return;
-    if (window.scrollY > 20) {
-        widget.classList.add('opacity-0', 'pointer-events-none');
-        widget.classList.remove('opacity-100', 'pointer-events-auto');
-    } else {
-        // Only show if sidebar is not open on mobile
-        if (!isSidebarOpenOnMobile()) {
-            widget.classList.remove('opacity-0', 'pointer-events-none');
-            widget.classList.add('opacity-100', 'pointer-events-auto');
-        }
-    }
-});
-
-// Helper: check if sidebar is open on mobile
-function isSidebarOpenOnMobile() {
-    const sidebar = document.getElementById('adminSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const isMobile = window.innerWidth < 768;
-    if (!isMobile) return false;
-    if (overlay && overlay.style.display !== 'none' && overlay.offsetParent !== null) return true;
-    if (sidebar && (sidebar.classList.contains('translate-x-0') || sidebar.classList.contains('open'))) return true;
-    return false;
-}
-
-// Hide/show widget on sidebar toggle and window resize
-function updateDateTimeWidgetVisibility() {
-    const widget = document.getElementById('dateTimeWidget');
-    if (!widget) return;
-    if (window.scrollY > 20 || isSidebarOpenOnMobile()) {
-        widget.classList.add('opacity-0', 'pointer-events-none');
-        widget.classList.remove('opacity-100', 'pointer-events-auto');
-    } else {
-        widget.classList.remove('opacity-0', 'pointer-events-none');
-        widget.classList.add('opacity-100', 'pointer-events-auto');
-    }
-}
-window.addEventListener('resize', updateDateTimeWidgetVisibility);
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-            setTimeout(updateDateTimeWidgetVisibility, 350);
-        });
-    }
-    const overlay = document.getElementById('sidebarOverlay');
-    if (overlay) {
-        overlay.addEventListener('click', function() {
-            setTimeout(updateDateTimeWidgetVisibility, 350);
-        });
-    }
-    updateDateTimeWidgetVisibility();
-});
-const sidebar = document.getElementById('adminSidebar');
-if (sidebar && typeof MutationObserver !== 'undefined') {
-    const observer = new MutationObserver(updateDateTimeWidgetVisibility);
-    observer.observe(sidebar, { attributes: true, attributeFilter: ['class', 'style'] });
-}
 // Dark mode toggle
 function toggleDarkMode() {
     document.documentElement.classList.toggle('dark');
@@ -392,6 +348,21 @@ function toggleDarkMode() {
 if (localStorage.getItem('dashboardDarkMode') === 'true') {
     document.documentElement.classList.add('dark');
 }
+// Floating widget live date/time update
+function updateDashboardDateTimeWidget() {
+    const dateElem = document.getElementById('dashboardWidgetDate');
+    const timeElem = document.getElementById('dashboardWidgetTime');
+    if (!dateElem || !timeElem) return;
+    const now = new Date();
+    // Format: May 23, 2025
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    // Format: 14:05:09 (24-hour)
+    const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    dateElem.textContent = dateStr;
+    timeElem.textContent = timeStr;
+}
+setInterval(updateDashboardDateTimeWidget, 1000);
+document.addEventListener('DOMContentLoaded', updateDashboardDateTimeWidget);
 // Filter/search for recent orders
 function filterOrders() {
     const input = document.getElementById('orderSearch').value.toLowerCase();

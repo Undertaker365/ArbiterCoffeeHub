@@ -44,6 +44,18 @@ ob_start();
             <?php endif; ?>
         </ul>
     </div>
+    <?php
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    $notification = $_SESSION['notification'] ?? '';
+    unset($_SESSION['notification']);
+    ?>
+    <?php if ($notification): ?>
+      <div class="bg-green-100 border border-green-400 text-green-700 p-4 rounded mb-6 text-center max-w-xl mx-auto">
+        <?= htmlspecialchars($notification) ?>
+      </div>
+    <?php endif; ?>
 </div>
 <?php
 $content = ob_get_clean();

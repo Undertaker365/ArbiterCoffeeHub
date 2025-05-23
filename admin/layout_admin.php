@@ -1,6 +1,8 @@
 <?php
 // layout_admin.php - Admin layout and navigation
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
     header('Location: ../public/login.php');
     exit();
@@ -18,7 +20,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
       .toast { z-index: 9999; }
     </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gray-100 font-[Montserrat]">
+<body class="flex flex-col max-h-screen bg-gray-100 font-[Montserrat]">
 <!-- Toast Notification Container -->
 <div id="toast-container" class="fixed top-4 right-4 space-y-2 toast"></div>
 <div class="flex flex-1">
@@ -44,9 +46,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
         <a href="reports.php" class="flex items-center p-2 hover:bg-[#006837] rounded">
             <i class="fas fa-file-alt w-6"></i> <span class="ml-2">Reports</span>
         </a>
-        <a href="logout.php" class="flex items-center p-2 hover:bg-red-600 rounded mt-4">
-            <i class="fas fa-sign-out-alt w-6"></i> <span class="ml-2">Logout</span>
+        <a href="reviews.php" class="flex items-center p-2 hover:bg-[#006837] rounded">
+            <i class="fas fa-star w-6"></i> <span class="ml-2">Reviews</span>
         </a>
+        <a href="logout.php" class="flex items-center p-2 hover:bg-red-600 rounded mt-4"><i class="fas fa-sign-out-alt w-6"></i> <span class="ml-2">Logout</span></a>
     </nav>
     <!-- Close button for mobile -->
     <button id="sidebarClose" class="md:hidden absolute top-4 right-4 bg-white text-[#009245] p-2 rounded-full shadow focus:outline-none">

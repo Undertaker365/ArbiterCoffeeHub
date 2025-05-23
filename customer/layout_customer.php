@@ -33,7 +33,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Customer') {
             <a href="place_order.php" class="flex items-center p-2 hover:bg-[#006837] rounded"><i class="fas fa-mug-hot w-6"></i> <span class="ml-2">Place Order</span></a>
             <a href="order_history.php" class="flex items-center p-2 hover:bg-[#006837] rounded"><i class="fas fa-history w-6"></i> <span class="ml-2">Order History</span></a>
             <a href="profile.php" class="flex items-center p-2 hover:bg-[#006837] rounded"><i class="fas fa-user w-6"></i> <span class="ml-2">Profile</span></a>
-            <a href="../public/logout.php" class="flex items-center p-2 hover:bg-red-600 rounded mt-4"><i class="fas fa-sign-out-alt w-6"></i> <span class="ml-2">Logout</span></a>
+            <a href="cart.php" class="flex items-center p-2 hover:bg-[#006837] rounded"><i class="fas fa-shopping-cart w-6"></i> <span class="ml-2">Cart</span></a>
+            <a href="review.php" class="flex items-center p-2 hover:bg-[#006837] rounded"><i class="fas fa-star w-6"></i> <span class="ml-2">Reviews</span></a>
+            <a href="../customer/logout.php" class="flex items-center p-2 hover:bg-red-600 rounded mt-4"><i class="fas fa-sign-out-alt w-6"></i> <span class="ml-2">Logout</span></a>
         </nav>
         <button id="sidebarClose" class="md:hidden absolute top-4 right-4 bg-white text-[#009245] p-2 rounded-full shadow focus:outline-none"><i class="fas fa-times"></i></button>
     </div>

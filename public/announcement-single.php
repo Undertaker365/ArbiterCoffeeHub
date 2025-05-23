@@ -22,6 +22,17 @@ ob_start();
     <?php else: ?>
       <div class="text-gray-400 text-center">Announcement not found.</div>
     <?php endif; ?>
+
+    <?php
+    // Social share buttons
+    $url = urlencode((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+    $title = isset($announcement['title']) ? htmlspecialchars($announcement['title'], ENT_QUOTES, 'UTF-8') : '';
+    ?>
+    <div class="flex gap-4 justify-center mt-6">
+      <a href="https://www.facebook.com/sharer/sharer.php?u=<?= $url ?>" target="_blank" class="text-blue-600 hover:underline flex items-center"><i class="fab fa-facebook mr-1"></i>Share</a>
+      <a href="https://twitter.com/intent/tweet?url=<?= $url ?>&text=<?= $title ?>" target="_blank" class="text-blue-400 hover:underline flex items-center"><i class="fab fa-twitter mr-1"></i>Tweet</a>
+      <a href="https://www.linkedin.com/shareArticle?mini=true&url=<?= $url ?>&title=<?= $title ?>" target="_blank" class="text-blue-700 hover:underline flex items-center"><i class="fab fa-linkedin mr-1"></i>LinkedIn</a>
+    </div>
   </div>
 </section>
 <?php

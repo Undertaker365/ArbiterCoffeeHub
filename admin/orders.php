@@ -1,5 +1,9 @@
 <?php
 require_once '../db_connect.php';
+
+// Fetch all orders with customer names from the database
+$orders = $conn->query("SELECT o.*, u.first_name, u.last_name FROM orders o LEFT JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+
 ob_start();
 ?>
 <h1 class="text-2xl font-bold text-[#006837] mb-6">Order Management</h1>

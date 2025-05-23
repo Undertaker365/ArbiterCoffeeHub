@@ -27,6 +27,7 @@ ob_start();
                 <th class="px-4 py-2">Category</th>
                 <th class="px-4 py-2">Price</th>
                 <th class="px-4 py-2">Featured</th>
+                <th class="px-4 py-2">New?</th>
                 <th class="px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -59,7 +60,7 @@ function fetchProducts(query = '', category = '', featured = '') {
             const tbody = document.getElementById('productsBody');
             tbody.innerHTML = '';
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-gray-400">No products found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-gray-400">No products found.</td></tr>';
                 return;
             }
             data.forEach(product => {
@@ -70,6 +71,7 @@ function fetchProducts(query = '', category = '', featured = '') {
                     <td class="px-4 py-2">${product.category}</td>
                     <td class="px-4 py-2">₱${parseFloat(product.price).toFixed(2)}</td>
                     <td class="px-4 py-2">${product.featured == 1 ? '✅' : '❌'}</td>
+                    <td class="px-4 py-2">${product.is_new == 1 ? 'Yes' : 'No'}</td>
                     <td class="px-4 py-2 space-x-2">
                         <a href="edit_product.php?id=${product.id}" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"><i class="fas fa-edit"></i> Edit</a>
                         <button onclick="deleteProduct(${product.id})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"><i class="fas fa-trash"></i> Delete</button>
@@ -113,6 +115,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <!-- Pagination placeholder: implement server-side pagination as needed -->
 <?php
+if (isset($_POST['toggle_new'])) {
+  $pid = (int)$_POST['product_id'];
+  $cur = $conn->query("SELECT is_new FROM products WHERE id=$pid")->fetchColumn();
+  $new = $cur ? 0 : 1;
+  $conn->prepare("UPDATE products SET is_new=? WHERE id=?")->execute([$new, $pid]);
+  header('Location: products.php');
+  exit();
+}
+
 $content = ob_get_clean();
 include 'layout_admin.php';
 ?>

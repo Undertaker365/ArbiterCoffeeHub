@@ -3,46 +3,53 @@ require_once '../db_connect.php';
 
 $errors = [];
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $first_name = trim($_POST['first_name'] ?? '');
-    $last_name = trim($_POST['last_name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $phone_number = trim($_POST['phone'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
+$csrf_token = bin2hex(random_bytes(32));
+$_SESSION['csrf_token'] = $csrf_token;
 
-    if (empty($first_name) || empty($last_name) || empty($email) || empty($phone_number) || empty($password) || empty($confirm_password)) {
-        $errors[] = "All fields are required.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Invalid email format.";
-    } elseif (!preg_match('/^[0-9]{11}$/', $phone_number)) {
-        $errors[] = "Phone number must be 11 digits.";
-    } elseif ($password !== $confirm_password) {
-        $errors[] = "Passwords do not match.";
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+        $errors[] = "Invalid CSRF token.";
     } else {
-        // Check if the email already exists
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        if ($stmt->fetch()) {
-            $errors[] = "Email is already registered.";
+        $first_name = trim($_POST['first_name'] ?? '');
+        $last_name = trim($_POST['last_name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $phone_number = trim($_POST['phone'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
+
+        if (empty($first_name) || empty($last_name) || empty($email) || empty($phone_number) || empty($password) || empty($confirm_password)) {
+            $errors[] = "All fields are required.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Invalid email format.";
+        } elseif (!preg_match('/^[0-9]{11}$/', $phone_number)) {
+            $errors[] = "Phone number must be 11 digits.";
+        } elseif ($password !== $confirm_password) {
+            $errors[] = "Passwords do not match.";
         } else {
-            // Default role is Customer
-            $role = 'Customer';
-            
-            // Hash password
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            
-            // Insert new user with default role
-            $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, phone_number, password, role) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$first_name, $last_name, $email, $phone_number, $hashed_password, $role]);
-            
-            // Set session variables for the user
-            $_SESSION['user_id'] = $conn->lastInsertId();
-            $_SESSION['full_name'] = $first_name . ' ' . $last_name;
-            $_SESSION['role'] = $role;
-            
-            header("Location: ../public/login.php");
-            exit();
+            // Check if the email already exists
+            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            if ($stmt->fetch()) {
+                $errors[] = "Email is already registered.";
+            } else {
+                // Default role is Customer
+                $role = 'Customer';
+                
+                // Hash password
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                // Insert new user with default role
+                $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, phone_number, password, role) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$first_name, $last_name, $email, $phone_number, $hashed_password, $role]);
+                
+                // Set session variables for the user
+                $_SESSION['user_id'] = $conn->lastInsertId();
+                $_SESSION['full_name'] = $first_name . ' ' . $last_name;
+                $_SESSION['role'] = $role;
+                
+                header("Location: ../public/login.php");
+                exit();
+            }
         }
     }
 }
@@ -70,6 +77,8 @@ ob_start();
     <?php endif; ?>
 
     <form method="POST" action="register.php" class="space-y-4">
+      <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+
       <div class="relative">
         <label class="block text-sm font-medium text-gray-700">First Name</label>
         <div class="absolute left-3 top-9 text-gray-400"><i class="fas fa-user"></i></div>

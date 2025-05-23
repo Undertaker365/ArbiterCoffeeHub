@@ -2,37 +2,47 @@
 // All PHP logic and ob_start() must be at the very top, before any HTML or whitespace.
 
 require_once '../db_connect.php';
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 $errors = [];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
-
-    if (empty($email) || empty($password)) {
-        $errors[] = "Email and password are required.";
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $errors[] = "Invalid CSRF token.";
     } else {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $email = trim($_POST['email']);
+        $password = $_POST['password'];
 
-        if ($user && password_verify($password, $user['password'])) {
-            // Set session variables
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
-            $_SESSION['role'] = $user['role'];  // Store the role
-
-            // Redirect based on role
-            if ($user['role'] === 'Admin') {
-                header("Location: ../admin/dashboard.php");
-            } elseif ($user['role'] === 'Barista') {
-                header("Location: ../barista/dashboard.php");
-            } else {
-                header("Location: ../customer/dashboard.php");
-            }
-            exit();
+        if (empty($email) || empty($password)) {
+            $errors[] = "Email and password are required.";
         } else {
-            $errors[] = "Invalid email or password.";
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password'])) {
+                // Set session variables
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
+                $_SESSION['role'] = $user['role'];  // Store the role
+
+                // Redirect based on role
+                if ($user['role'] === 'Admin') {
+                    header("Location: ../admin/dashboard.php");
+                } elseif ($user['role'] === 'Barista') {
+                    header("Location: ../barista/dashboard.php");
+                } else {
+                    header("Location: ../customer/dashboard.php");
+                }
+                exit();
+            } else {
+                $errors[] = "Invalid email or password.";
+            }
         }
     }
 }
@@ -58,7 +68,9 @@ ob_start();
         </div>
         <?php endif; ?>
 
-        <form method="POST" action="login.php" class="space-y-4">
+        <form method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="space-y-4">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+
         <div class="relative">
             <label class="block text-sm font-medium text-gray-700">Email</label>
             <div class="absolute left-3 top-9 text-gray-400"><i class="fas fa-envelope"></i></div>
