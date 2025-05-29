@@ -1,5 +1,5 @@
 <?php
-require_once '../db_connect.php';
+require_once '../includes/db_util.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
@@ -13,8 +13,7 @@ if (empty($_SESSION['cart'])) {
 }
 $cart = $_SESSION['cart'];
 $ids = implode(',', array_map('intval', array_keys($cart)));
-$stmt = $conn->query("SELECT * FROM products WHERE id IN ($ids)");
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$products = db_fetch_all("SELECT * FROM products WHERE id IN ($ids)");
 $total = 0;
 foreach ($products as &$p) {
     $p['quantity'] = $cart[$p['id']];
@@ -30,12 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     }
     $user_id = $_SESSION['user_id'];
     $status = 'pending';
-    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_price, status, created_at) VALUES (?, ?, ?, NOW())");
-    $stmt->execute([$user_id, $total, $status]);
-    $order_id = $conn->lastInsertId();
-    $stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
+    db_execute("INSERT INTO orders (user_id, total_price, status, created_at) VALUES (?, ?, ?, NOW())", [$user_id, $total, $status]);
+    $order_id = db_last_insert_id();
     foreach ($products as $p) {
-        $stmt->execute([$order_id, $p['id'], $p['quantity'], $p['price']]);
+        db_execute("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)", [$order_id, $p['id'], $p['quantity'], $p['price']]);
     }
     unset($_SESSION['cart']);
     $orderSuccess = true;
@@ -45,7 +42,7 @@ $page_title = 'Checkout - Arbiter Coffee Hub';
 ob_start();
 ?>
 <section class="py-16 bg-white">
-  <div class="max-w-3xl mx-auto px-4">
+  <div class="max-w-3xl mx-auto px-2 sm:px-4">
     <h2 class="text-3xl font-bold text-[#006837] mb-8 text-center">Checkout</h2>
     <?php if ($orderSuccess): ?>
       <div class="bg-green-100 border border-green-400 text-green-700 p-4 rounded mb-6 text-center">Order placed successfully!</div>

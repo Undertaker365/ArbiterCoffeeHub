@@ -1,10 +1,8 @@
 <?php
-require_once '../db_connect.php';
+require_once '../includes/db_util.php';
 $start = $_GET['start'] ?? date('Y-m-01');
 $end = $_GET['end'] ?? date('Y-m-d');
-$stmt = $conn->prepare("SELECT o.id, u.first_name, u.last_name, o.total_price, o.status, o.created_at FROM orders o JOIN users u ON o.user_id = u.id WHERE DATE(o.created_at) BETWEEN ? AND ? ORDER BY o.created_at DESC");
-$stmt->execute([$start, $end]);
-$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$orders = db_fetch_all("SELECT o.id, u.first_name, u.last_name, o.total_price, o.status, o.created_at FROM orders o JOIN users u ON o.user_id = u.id WHERE DATE(o.created_at) BETWEEN ? AND ? ORDER BY o.created_at DESC", [$start, $end]);
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename="sales_report_'.date('Ymd').'.csv"');
 $output = fopen('php://output', 'w');
@@ -20,3 +18,4 @@ foreach ($orders as $order) {
 }
 fclose($output);
 exit;
+?>

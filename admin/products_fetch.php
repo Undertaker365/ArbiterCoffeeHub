@@ -1,11 +1,9 @@
 <?php
-require_once '../db_connect.php';
+require_once '../includes/db_util.php';
 $search = $_GET['search'] ?? '';
 $sql = "SELECT * FROM products WHERE name LIKE ? OR category LIKE ? ORDER BY name ASC";
-$stmt = $conn->prepare($sql);
 $searchParam = '%' . $search . '%';
-$stmt->execute([$searchParam, $searchParam]);
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$products = db_fetch_all($sql, [$searchParam, $searchParam]);
 header('Content-Type: application/json');
 echo json_encode($products);
 exit;

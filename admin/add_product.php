@@ -38,7 +38,6 @@ ob_start();
     </div>
 </form>
 </div>
-<script src="https://cdn.tailwindcss.com"></script>
 <?php
 $content = ob_get_clean();
 include 'layout_admin.php';

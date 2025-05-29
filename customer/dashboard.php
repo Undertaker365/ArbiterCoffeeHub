@@ -14,7 +14,7 @@ ob_start();
 ?>
 <div class="flex-1 p-6 md:ml-64">
     <h1 class="text-2xl font-bold text-[#006837] mb-2">Welcome, Customer!</h1>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full px-2 sm:px-0">
         <div class="bg-white rounded-xl shadow p-4 text-center">
             <div class="text-gray-500">Orders Placed</div>
             <div class="text-2xl font-bold text-[#009245]"><?= $total_orders ?></div>

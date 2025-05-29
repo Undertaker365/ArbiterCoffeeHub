@@ -1,5 +1,7 @@
 <?php
-require_once '../db_connect.php';
+require_once '../includes/db_util.php';
+require_once '../includes/csrf.php';
+csrf_validate();
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
@@ -9,29 +11,27 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Customer') {
 }
 $user_id = $_SESSION['user_id'];
 // Fetch products from completed orders
-$stmt = $conn->prepare("SELECT oi.product_id, p.name, p.image_filename FROM order_items oi JOIN orders o ON oi.order_id = o.id JOIN products p ON oi.product_id = p.id WHERE o.user_id = ? AND o.status = 'completed' GROUP BY oi.product_id");
-$stmt->execute([$user_id]);
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$products = db_fetch_all("SELECT oi.product_id, p.name, p.image_filename FROM order_items oi JOIN orders o ON oi.order_id = o.id JOIN products p ON oi.product_id = p.id WHERE o.user_id = ? AND o.status = 'completed' GROUP BY oi.product_id", [$user_id]);
 // Handle review submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'], $_POST['rating'], $_POST['review'])) {
     $pid = (int)$_POST['product_id'];
     $rating = max(1, min(5, (int)$_POST['rating']));
     $review = trim($_POST['review']);
-    $stmt = $conn->prepare("INSERT INTO reviews (user_id, product_id, rating, review, created_at) VALUES (?, ?, ?, ?, NOW())");
-    $stmt->execute([$user_id, $pid, $rating, $review]);
+    db_execute("INSERT INTO reviews (user_id, product_id, rating, review, created_at) VALUES (?, ?, ?, ?, NOW())", [$user_id, $pid, $rating, $review]);
     $success = true;
 }
 $page_title = 'Leave a Review - Arbiter Coffee Hub';
 ob_start();
 ?>
 <section class="py-16 bg-white">
-  <div class="max-w-3xl mx-auto px-4">
+  <div class="max-w-3xl mx-auto px-2 sm:px-4">
     <h2 class="text-3xl font-bold text-[#006837] mb-8 text-center">Leave a Product Review</h2>
     <?php if (!empty($success)): ?>
       <div class="bg-green-100 border border-green-400 text-green-700 p-4 rounded mb-6 text-center">Thank you for your review!</div>
     <?php endif; ?>
     <?php if ($products): ?>
       <form method="post" class="space-y-6">
+        <?= csrf_input() ?>
         <label for="product_id" class="block font-semibold mb-2">Select Product</label>
         <select name="product_id" id="product_id" class="border rounded px-4 py-2 w-full mb-4">
           <?php foreach ($products as $p): ?>

@@ -14,7 +14,7 @@ ob_start();
 ?>
 <div class="flex-1 p-6 md:ml-64 flex flex-col items-center justify-start min-w-screen">
     <h1 class="text-2xl font-bold text-[#006837] mb-6 text-center">Welcome, Barista!</h1>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-2xl mx-auto justify-items-center">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-2xl mx-auto justify-items-center px-2 sm:px-0">
         <div class="bg-white rounded-xl shadow p-4 text-center w-48">
             <div class="text-gray-500">Pending</div>
             <div class="text-2xl font-bold text-yellow-600"><?= $pending ?></div>

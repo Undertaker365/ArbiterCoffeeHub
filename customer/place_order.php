@@ -1,6 +1,8 @@
 <?php
 session_start();
-require_once '../db_connect.php';
+require_once '../includes/db_util.php';
+require_once '../includes/csrf.php';
+csrf_validate();
 ob_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Customer') {
     header('Location: ../public/login.php');
@@ -17,31 +19,29 @@ if (isset($_POST['submit_order']) && !empty($_SESSION['cart'])) {
     $total = 0;
     $items = [];
     foreach ($_SESSION['cart'] as $pid => $qty) {
-        $prod = $conn->query("SELECT * FROM products WHERE id = $pid")->fetch(PDO::FETCH_ASSOC);
+        $prod = db_fetch_one("SELECT * FROM products WHERE id = ?", [$pid]);
         if ($prod) {
             $total += $prod['price'] * $qty;
             $items[] = ['id' => $pid, 'qty' => $qty, 'price' => $prod['price']];
         }
     }
-    $conn->prepare("INSERT INTO orders (user_id, total_price, status, created_at) VALUES (?, ?, 'pending', NOW())")
-        ->execute([$user_id, $total]);
-    $order_id = $conn->lastInsertId();
+    db_execute("INSERT INTO orders (user_id, total_price, status, created_at) VALUES (?, ?, 'pending', NOW())", [$user_id, $total]);
+    $order_id = db_last_insert_id();
     foreach ($items as $item) {
-        $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)
-")
-            ->execute([$order_id, $item['id'], $item['qty'], $item['price']]);
+        db_execute("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)", [$order_id, $item['id'], $item['qty'], $item['price']]);
     }
     unset($_SESSION['cart']);
     header('Location: order_history.php?success=1');
     exit();
 }
-$products = $conn->query("SELECT * FROM products ORDER BY category, name")->fetchAll(PDO::FETCH_ASSOC);
+$products = db_fetch_all("SELECT * FROM products ORDER BY category, name");
 $cart = $_SESSION['cart'] ?? [];
 ?>
 <div class="flex-1 p-6 md:ml-64">
     <h1 class="text-2xl font-bold text-[#006837] mb-4">Place an Order</h1>
     <div class="bg-white rounded-xl shadow p-6 mb-6">
-        <form method="post" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <form method="post" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full px-2 sm:px-0">
+            <?= csrf_input() ?>
             <?php foreach ($products as $prod): ?>
             <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
                 <?php if ($prod['image_filename']): ?>
@@ -69,6 +69,7 @@ $cart = $_SESSION['cart'] ?? [];
         <?php if (!empty($cart)): ?>
         <div class="font-bold mb-2">Total: ₱<?= number_format($total, 2) ?></div>
         <form method="post">
+            <?= csrf_input() ?>
             <button name="submit_order" class="bg-[#006837] text-white px-6 py-2 rounded hover:bg-green-900">Submit Order</button>
         </form>
         <?php endif; ?>

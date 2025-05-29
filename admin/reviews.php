@@ -1,5 +1,7 @@
 <?php
 require_once '../db_connect.php';
+require_once '../includes/csrf.php';
+csrf_validate();
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
     header('Location: ../public/login.php');
@@ -19,6 +21,7 @@ ob_start();
 <section class="py-16 bg-white">
   <div class="max-w-5xl mx-auto px-4">
     <h2 class="text-3xl font-bold text-[#006837] mb-8 text-center">Product Reviews</h2>
+    <div class="overflow-x-auto bg-white rounded shadow px-2 sm:px-4">
     <table class="w-full mb-6 text-left">
       <thead>
         <tr class="border-b">
@@ -40,6 +43,7 @@ ob_start();
           <td><?= date('Y-m-d', strtotime($r['created_at'])) ?></td>
           <td>
             <form method="post" style="display:inline;">
+              <?= csrf_input() ?>
               <input type="hidden" name="review_id" value="<?= $r['id'] ?>">
               <button name="delete_review" value="1" type="submit" class="text-red-600 hover:underline">Delete</button>
             </form>
@@ -48,6 +52,7 @@ ob_start();
         <?php endforeach; ?>
       </tbody>
     </table>
+    </div>
     <?php if (count($reviews) === 0): ?>
       <p class="text-gray-600 text-center">No reviews found.</p>
     <?php endif; ?>

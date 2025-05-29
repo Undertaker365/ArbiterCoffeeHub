@@ -60,7 +60,7 @@ $page_title = 'My Cart - Arbiter Coffee Hub';
 ob_start();
 ?>
 <section class="py-16 bg-white">
-  <div class="max-w-3xl mx-auto px-4">
+  <div class="max-w-3xl mx-auto px-2 sm:px-4">
     <h2 class="text-3xl font-bold text-[#006837] mb-8 text-center">My Cart</h2>
     <?php if ($cartProducts): ?>
     <form method="post">
@@ -108,3 +108,4 @@ ob_start();
 <?php
 $content = ob_get_clean();
 include 'layout_customer.php';
+// Remove duplicate loading indicator, flash animation, and shared JS utilities

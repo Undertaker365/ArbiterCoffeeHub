@@ -1,13 +1,14 @@
 <?php
-require_once '../db_connect.php';
-$stmt = $conn->prepare("SELECT * FROM products WHERE is_new = 1");
-$stmt->execute();
-$newProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+require_once '../includes/db_util.php';
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+$newProducts = db_fetch_all("SELECT * FROM products WHERE is_new = 1");
 $page_title = 'New Menu Items - Arbiter Coffee Hub';
 ob_start();
 ?>
 <section class="py-16 bg-white">
-  <div class="max-w-6xl mx-auto px-4 text-center">
+  <div class="max-w-6xl mx-auto px-2 sm:px-4 text-center">
     <h2 class="text-4xl font-bold text-[#009245] mb-10">New Menu Items</h2>
     <div class="flex justify-center">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -20,7 +21,7 @@ ob_start();
               <p class="text-gray-600 text-sm text-center"><?= htmlspecialchars($product['description']) ?></p>
               <p class="text-gray-800 font-bold mt-2 text-center"><?= number_format($product['price'], 2) ?> PHP</p>
               <div class="flex justify-center">
-                <a href="login.php" class="inline-block mt-3 bg-[#1A1A1A] text-white px-4 py-2 rounded-full text-sm hover:bg-black">
+                <a href="#" class="inline-block mt-3 bg-[#1A1A1A] text-white px-4 py-2 rounded-full text-sm hover:bg-black" onclick="openLoginModal();return false;">
                   Order Now
                 </a>
               </div>

@@ -1,33 +1,50 @@
 <?php
-// session_start() should be called in the layout, not in the header include.
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+// Determine if this is a public page (in /public/ or index.php)
+$isPublicPage = false;
+$publicRoots = ['/index.php', '/ArbiterCoffeeHub/index.php'];
+$currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
+if (strpos($currentScript, '/public/') !== false || in_array($currentScript, $publicRoots)) {
+  $isPublicPage = true;
+}
 ?>
 <!-- Header Section -->
-<header class="bg-[#1A1A1A] text-white py-4 shadow">
-  <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
-    <a href="../index.php" class="flex items-center space-x-2">
-      <span class="text-xl font-bold">Arbiter Coffee Hub</span>
+<header class="w-full bg-black shadow<?= $isPublicPage ? ' sticky top-0 z-40' : '' ?>">
+  <?php if (isset($_SESSION['user_name'])): ?>
+    <div class="w-full bg-black text-white py-3 text-center font-semibold text-lg animate-fade-in-down" aria-live="polite">
+      Welcome back, <?= htmlspecialchars($_SESSION['user_name']) ?>!
+    </div>
+  <?php endif; ?>
+  <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+    <a href="/index.php" class="text-xl font-bold text-white flex items-center gap-2">
+      <img src="/uploads/logo.png" alt="Arbiter Coffee Hub Logo" class="h-10 w-10 rounded-full bg-white mr-2" style="display:inline-block;vertical-align:middle;"> Arbiter Coffee Hub
     </a>
-    <nav class="hidden md:flex">
-      <ul class="flex space-x-6 text-sm font-medium">
-        <li><a href="../public/menu.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-mug-hot mr-1"></i> Menu</a></li>
-        <li><a href="../public/about.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-info-circle mr-1"></i> About Us</a></li>
-        <li><a href="../public/contact.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-envelope mr-1"></i> Contact</a></li>
-        <?php if (isset($_SESSION['role'])): ?>
-          <?php if ($_SESSION['role'] === 'Customer'): ?>
-            <li><a href="../customer/dashboard.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-user mr-1"></i> Dashboard</a></li>
-            <li><a href="../customer/logout.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>
-          <?php elseif ($_SESSION['role'] === 'Barista'): ?>
-            <li><a href="../barista/dashboard.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-user mr-1"></i> Dashboard</a></li>
-            <li><a href="../barista/logout.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>
-          <?php elseif ($_SESSION['role'] === 'Admin'): ?>
-            <li><a href="../admin/dashboard.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-user-shield mr-1"></i> Admin</a></li>
-            <li><a href="../admin/logout.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>
-          <?php endif; ?>
-        <?php else: ?>
-          <li><a href="../public/login.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-sign-in-alt mr-1"></i> Login</a></li>
-          <li><a href="../public/register.php" class="hover:text-[#009245] flex items-center"><i class="fas fa-user-plus mr-1"></i> Register</a></li>
-        <?php endif; ?>
-      </ul>
+    <nav class="flex gap-6 items-center">
+      <a href="/public/menu.php" class="text-gray-200 hover:text-green-500 flex items-center gap-1">
+        <i class="fas fa-mug-hot"></i>
+        <span class="hidden sm:inline">Menu</span>
+      </a>
+      <a href="/public/announcements.php" class="text-gray-200 hover:text-green-500 flex items-center gap-1">
+        <i class="fas fa-bullhorn"></i>
+        <span class="hidden sm:inline">Announcements</span>
+      </a>
+      <a href="/public/about.php" class="text-gray-200 hover:text-green-500 flex items-center gap-1">
+        <i class="fas fa-info-circle"></i>
+        <span class="hidden sm:inline">About</span>
+      </a>
+      <a href="/public/contact.php" class="text-gray-200 hover:text-green-500 flex items-center gap-1">
+        <i class="fas fa-envelope"></i>
+        <span class="hidden sm:inline">Contact</span>
+      </a>
+      <?php if (!isset($_SESSION['user_id'])): ?>
+      <a href="javascript:void(0);" id="header-login-btn" class="bg-green-700 text-white px-4 py-1 rounded hover:bg-green-800 ml-2 flex items-center gap-1" aria-haspopup="dialog" aria-controls="login-modal">
+        <i class="fas fa-sign-in-alt"></i>
+        <span class="hidden sm:inline">Login</span>
+      </a>
+      <?php endif; ?>
     </nav>
   </div>
 </header>

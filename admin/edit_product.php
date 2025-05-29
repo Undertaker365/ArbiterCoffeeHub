@@ -1,5 +1,7 @@
 <?php
-require_once '../db_connect.php';
+require_once '../includes/db_util.php';
+require_once '../includes/csrf.php';
+csrf_validate();
 include 'layout_admin.php';
 
 if (!isset($_GET['id'])) {
@@ -7,9 +9,7 @@ if (!isset($_GET['id'])) {
     exit;
 }
 $id = intval($_GET['id']);
-$stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
-$stmt->execute([$id]);
-$product = $stmt->fetch(PDO::FETCH_ASSOC);
+$product = db_fetch_one("SELECT * FROM products WHERE id = ?", [$id]);
 if (!$product) {
     header('Location: products.php');
     exit;
@@ -25,18 +25,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unlink("../uploads/" . $image_filename);
         }
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $image_filename = uniqid('prod_') . "." . $ext;
+        $image_filename = uniqid() . '.' . $ext;
         move_uploaded_file($_FILES['image']['tmp_name'], "../uploads/" . $image_filename);
     }
-    $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, featured=?, image_filename=? WHERE id=?");
-    $stmt->execute([$name, $category, $price, $featured, $image_filename, $id]);
+    db_execute("UPDATE products SET name=?, category=?, price=?, featured=?, image_filename=? WHERE id=?", [$name, $category, $price, $featured, $image_filename, $id]);
     header('Location: products.php');
     exit;
 }
 $content = ob_get_clean();
 ?>
 <h1 class="text-2xl font-bold text-[#006837] mb-6">Edit Product</h1>
-<form method="post" enctype="multipart/form-data" class="max-w-lg bg-white p-6 rounded shadow space-y-4">
+<form method="post" enctype="multipart/form-data" class="max-w-lg bg-white p-6 rounded shadow space-y-4 w-full px-2 sm:px-6">
+    <?= csrf_input() ?>
     <div>
         <label class="block mb-1 font-semibold">Name</label>
         <input required type="text" name="name" value="<?= htmlspecialchars($product['name']) ?>" class="w-full border px-3 py-2 rounded" />

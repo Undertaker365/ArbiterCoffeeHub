@@ -1,5 +1,7 @@
 <?php
-require_once '../db_connect.php';
+require_once '../includes/db_util.php';
+require_once '../includes/csrf.php';
+csrf_validate();
 ob_start();
 include 'layout_admin.php';
 if (!isset($_GET['id'])) {
@@ -7,9 +9,7 @@ if (!isset($_GET['id'])) {
     exit;
 }
 $id = intval($_GET['id']);
-$stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$id]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$user = db_fetch_one("SELECT * FROM users WHERE id = ?", [$id]);
 if (!$user) {
     header('Location: users.php');
     exit;
@@ -19,14 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last_name = trim($_POST['last_name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $role = $_POST['role'] ?? $user['role'];
-    $stmt = $conn->prepare("UPDATE users SET first_name=?, last_name=?, email=?, role=? WHERE id=?");
-    $stmt->execute([$first_name, $last_name, $email, $role, $id]);
+    db_execute("UPDATE users SET first_name=?, last_name=?, email=?, role=? WHERE id=?", [$first_name, $last_name, $email, $role, $id]);
     header('Location: users.php');
     exit;
 }
 ?>
 <h1 class="text-2xl font-bold text-[#006837] mb-6">Edit User</h1>
-<form method="post" class="max-w-lg bg-white p-6 rounded shadow space-y-4">
+<form method="post" class="max-w-lg bg-white p-6 rounded shadow space-y-4 w-full px-2 sm:px-6">
+    <?= csrf_input() ?>
     <div>
         <label class="block mb-1 font-semibold">First Name</label>
         <input required type="text" name="first_name" value="<?= htmlspecialchars($user['first_name']) ?>" class="w-full border px-3 py-2 rounded" />

@@ -1,6 +1,8 @@
 <?php
 session_start();
-require_once '../db_connect.php';
+require_once '../includes/db_util.php';
+require_once '../includes/csrf.php';
+csrf_validate();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Customer') {
     header('Location: ../public/login.php');
     exit();
@@ -10,11 +12,10 @@ $user_id = $_SESSION['user_id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
-    $conn->prepare("UPDATE users SET first_name = ?, email = ? WHERE id = ?")
-        ->execute([$name, $email, $user_id]);
+    db_execute("UPDATE users SET first_name = ?, email = ? WHERE id = ?", [$name, $email, $user_id]);
     $msg = 'Profile updated!';
 }
-$user = $conn->query("SELECT * FROM users WHERE id = $user_id")->fetch(PDO::FETCH_ASSOC);
+$user = db_fetch_one("SELECT * FROM users WHERE id = ?", [$user_id]);
 ob_start();
 ?>
 <div class="flex-1 p-6 md:ml-64">
@@ -22,6 +23,7 @@ ob_start();
     <div class="bg-white rounded-xl shadow p-6">
         <?php if (!empty($msg)): ?><div class="mb-4 text-green-600 font-semibold"><?= $msg ?></div><?php endif; ?>
         <form method="post">
+            <?= csrf_input() ?>
             <div class="mb-4">
                 <label class="block mb-1 font-semibold text-gray-700">Name</label>
                 <input type="text" name="name" class="w-full border rounded px-3 py-2" value="<?= htmlspecialchars($user['first_name']) ?>">

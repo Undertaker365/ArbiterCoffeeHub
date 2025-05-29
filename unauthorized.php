@@ -16,7 +16,7 @@ session_start();
   </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
-  <div class="bg-white p-10 rounded-2xl shadow-lg max-w-md text-center">
+  <div class="bg-white p-10 rounded-2xl shadow-lg max-w-md text-center px-2 sm:px-10">
     <div class="text-red-500 text-5xl mb-4">
       <i class="fas fa-exclamation-triangle"></i>
     </div>

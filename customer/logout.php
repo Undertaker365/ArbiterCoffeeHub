@@ -4,5 +4,5 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 session_unset();
 session_destroy();
-header('Location: ../public/login.php');
+header('Location: ../index.php');
 exit();

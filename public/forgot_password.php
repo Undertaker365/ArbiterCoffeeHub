@@ -1,5 +1,8 @@
 <?php
-session_start();
+require_once '../includes/db_util.php';
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 $success = $_SESSION['reset_success'] ?? null;
 $error = $_SESSION['reset_error'] ?? null;
@@ -12,7 +15,7 @@ $page_title = 'Forgot Password - Arbiter Coffee Hub';
 ob_start();
 ?>
 <section class="py-16 bg-white">
-  <div class="max-w-md mx-auto px-4">
+  <div class="max-w-md mx-auto px-2 sm:px-4">
     <h2 class="text-3xl font-bold text-[#006837] mb-8 text-center">Forgot Password</h2>
 
     <?php if ($success): ?>
@@ -42,11 +45,19 @@ ob_start();
     </form>
 
     <div class="text-center text-sm text-gray-600 mt-4">
-      <p>Remember your password? <a href="login.php" class="text-[#009245] hover:underline">Login here</a>.</p>
+      <p>Remember your password? <a href="#" class="text-[#009245] hover:underline" onclick="openLoginModal();return false;">Login here</a>.</p>
     </div>
   </div>
 </section>
 <?php
 $content = ob_get_clean();
 include 'layout_public.php';
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    try {
+        // ...existing logic for sending reset email...
+    } catch (PDOException $e) {
+        $_SESSION['reset_error'] = "A system error occurred. Please try again later.";
+    }
+}
 ?>

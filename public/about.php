@@ -1,4 +1,8 @@
 <?php
+require_once '../includes/db_util.php';
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 $page_title = 'About Us - Arbiter Coffee Hub';
 ob_start();
 ?>
@@ -9,7 +13,7 @@ ob_start();
 </section>
 <!-- Content Section -->
 <section class="py-16 bg-white">
-  <div class="max-w-4xl mx-auto px-4 text-center">
+  <div class="max-w-5xl mx-auto px-2 sm:px-4 text-center">
     <h2 class="text-3xl font-semibold text-[#009245] mb-6">Our Story</h2>
     <p class="text-gray-700 text-lg leading-relaxed">
       Arbiter Coffee Hub was born from a simple passion: to bring quality, ethically sourced coffee to our community. Founded in 2024, we’ve grown into a local favorite known for our artisanal brews, cozy ambiance, and warm customer service.
